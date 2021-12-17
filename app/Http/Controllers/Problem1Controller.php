@@ -98,22 +98,75 @@ class Problem1Controller extends Controller
                 "errors" => $aErrors
             ];
         }
-        foreach($aFields as $key => $value){
-            $this->validateField($request->input[$key], $value);
+        $aErrors = [];
+        foreach($validationFields as $key => $value){
+            $error = $this->validateField($key, $request->input[$key], $value);
+            if(count($error)){
+                $aErrors[] = $error;
+            }
+        }
+        if(count($aErrors)){
+            return [
+                "code" => 1000, 
+                "message" => "Validation Failed", 
+                "errors" => $aErrors
+            ];
         }
         return [
             "code" => 0
         ];
     }
 
-    private function validateField($field, $aValidation){
+    private function validateField($key, $value, $aValidation){
+        $error = [];
         switch($aValidation['type']){
             case 'int':
-                
+                if(!is_int($value)){
+                    $error = [
+                        "code" => 1004,
+                        "field" => "Value non well formed",
+                        "message" => "The '$key' value is not an integer"
+                    ];
+                }else{
+                    if(isset($aValidation['min']) && intval($value)<$aValidation['min']){
+                        $error = [
+                            "code" => 1005,
+                            "field" => "Limit value exceeded",
+                            "message" => "The '$key' value is lower than the lower the lower limit($aValidation[min])"
+                        ];
+                    }else if(isset($aValidation['max']) && intval($value)>$aValidation['max']){
+                        $error = [
+                            "code" => 1005,
+                            "field" => "Limit value exceeded",
+                            "message" => "The '$key' value exceeds the upper limit($aValidation[max])"
+                        ];
+                    }
+                }
                 break;
             case 'array':
-                
+                if(!is_array($value)){
+                    $error = [
+                        "code" => 1006,
+                        "field" => "Field type mismatch",
+                        "message" => "The '$key' value is not an array"
+                    ];
+                }else{
+                    if(isset($aValidation['min']) && count($value)<$aValidation['min']){
+                        $error = [
+                            "code" => 1007,
+                            "field" => "Array size exceeded",
+                            "message" => "The '$key' size is lower than the lower limit ($aValidation[min])"
+                        ];
+                    }else if(isset($aValidation['max']) && count($value)>$aValidation['max']){
+                        $error = [
+                            "code" => 1007,
+                            "field" => "Array size exceeded",
+                            "message" => "The '$key' size exceeds the upper limit($aValidation[max])"
+                        ];
+                    }
+                }
                 break;
         }
+        return $error;
     }
 }

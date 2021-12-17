@@ -8,13 +8,94 @@ class Problem1Controller extends Controller
 {
     public function index(Request $request)
     {
-        $aData = $this->validateData($request);  
-        if($aData['code']){
-            return response()->json($aData, 400);
-        }      
+        $aResponse = $this->validateData($request);  
+        if($aResponse['code']){
+            return response()->json($aResponse, 400);
+        }
+        $data = $request->input;
+        $aErrors = $this->extraValidation($data);
+        if(count($aErrors)){
+            return [
+                "code" => 2000, 
+                "message" => "Custom Validation Failed", 
+                "errors" => $aErrors
+            ];
+        }
         return response()->json([
-            'data' => $request->input
+            'data' => $data
         ], 200);
+    }
+
+    private function extraValidation($data){
+        $aErrors = [];
+        if($data['rq']>$data['n']){
+            $aErrors[]= [
+                "code" => 2001,
+                "field" => "Limit 'n' exceeded",
+                "message" => "The 'rq' value is bigger than 'n' value($data[n])"
+            ];
+        }
+        if($data['cq']>$data['n']){
+            $aErrors[]= [
+                "code" => 2002,
+                "field" => "Limit 'n' exceeded",
+                "message" => "The 'cq' value is bigger than 'n' value($data[n])"
+            ];
+        }
+        if(count($data['obstacles'])!==$data['k']){
+            $aErrors[]= [
+                "code" => 2003,
+                "field" => "Number of obstacles exceeded",
+                "message" => "The number of elements in the array 'obstacles' exceeds the limit 'k'($data[k])"
+            ];
+        }else{
+            foreach($data['obstacles'] as $key => $aPosition){
+                if(!is_array($aPosition)){
+                    $aErrors[]= [
+                        "code" => 2004,
+                        "field" => "Item type mismatch",
+                        "message" => "The $key item of the array 'obstacles' is not an array"
+                    ];
+                }else if(count($aPosition)!==2){
+                    $aErrors[]= [
+                        "code" => 2005,
+                        "field" => "Item non well formed",
+                        "message" => "The $key item of the array 'obstacles' is not a 2 dimensional array [x,y]"
+                    ];
+                }else{
+                    if($aPosition[0]<1){
+                        $aErrors[]= [
+                            "code" => 2006,
+                            "field" => "i position error",
+                            "message" => "The $key item of the array 'obstacles', in the i position ($aPosition[0]) has lower value than the limit(1)" 
+                        ];
+                    }
+                    if($aPosition[0]>$data['n']){
+                        $aErrors[]= [
+                            "code" => 2007,
+                            "field" => "i position error",
+                            "message" => "The $key item of the array 'obstacles', in the i position ($aPosition[0])  has bigger value than the limit($data[n])" 
+                        ];
+                    }
+                    if($aPosition[1]<1){
+                        $aErrors[]= [
+                            "code" => 2008,
+                            "field" => "j position error",
+                            "message" => "The $key item of the array 'obstacles', in the j position ($aPosition[1]) has lower value than the limit(1)" 
+                        ];
+                    }
+                    if($aPosition[0]>$data['n']){
+                        $aErrors[]= [
+                            "code" => 2007,
+                            "field" => "j position error",
+                            "message" => "The $key item of the array 'obstacles', in the i position ($aPosition[1]) has bigger value than the limit($data[n])" 
+                        ];
+                    }
+                }
+            }
+        }
+        
+        return $aErrors;
     }
 
     private function validateData($request){
@@ -47,7 +128,7 @@ class Problem1Controller extends Controller
         $validationFields = [
             'n' => [
                 'type' => 'int', 
-                'min' => 0, 
+                'min' => 1, 
                 'max' => 100000
             ], 
             'k' => [
@@ -57,18 +138,16 @@ class Problem1Controller extends Controller
             ], 
             'rq' => [
                 'type' => 'int', 
-                'min' => 0, 
+                'min' => 1, 
                 'max' => 100000
             ], 
             'cq'=> [
                 'type' => 'int', 
-                'min' => 0, 
+                'min' => 1, 
                 'max' => 100000
             ], 
             'obstacles' => [
-                'type' => 'array', 
-                'min' => 2, 
-                'max' => 2
+                'type' => 'array'
             ]
         ];
         $aFields = [];

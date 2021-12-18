@@ -19,3 +19,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/problem-1', 'App\Http\Controllers\Problem1Controller@index');
+
+Route::post('/problem-2', 'App\Http\Controllers\Problem2Controller@index');

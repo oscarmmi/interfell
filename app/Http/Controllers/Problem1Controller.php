@@ -21,9 +21,146 @@ class Problem1Controller extends Controller
                 "errors" => $aErrors
             ];
         }
+        $count = $this->calculateQueenMoves($data);
         return response()->json([
-            'data' => $data
+            'data' => $count
         ], 200);
+    }
+
+    private function calculateQueenMoves($data){
+        $iArray = [];
+        $indexX = [];
+        $jArray = [];
+        $indexY = [];
+        foreach($data['obstacles'] as $item){
+
+            if(!in_array(intval($item[0]), $iArray)){
+                $iArray[] =  intval($item[0]);
+                $indexX[intval($item[0])] = [];
+                $indexX[intval($item[0])][] = intval($item[1]);
+            }else if(!in_array(intval($item[1]), $indexX[intval($item[0])])){
+                $indexX[intval($item[0])][] = intval($item[1]);
+            }
+
+            if(!in_array(intval($item[1]), $jArray)){
+                $jArray[] = intval($item[1]);
+                $indexY[intval($item[1])] = [];
+                $indexY[intval($item[1])][] = intval($item[0]);
+            }else if(!in_array(intval($item[0]), $indexY[intval($item[1])])){
+                $indexY[intval($item[1])][] = intval($item[0]);
+            }
+
+        }
+        // Horizontal Right 
+        $count = 0;
+        $currentX = [];
+        if(isset($indexX[intval($data['rq'])])){
+            $currentX =  $indexX[intval($data['rq'])];
+        }
+        for($i=(intval($data['cq'])+1);$i<=intval($data['n']);$i++){
+            if(in_array($i, $currentX)){
+                break;
+            }
+            $count++;
+        }
+
+        // Horizontal Left 
+        for($i=(intval($data['cq'])-1);$i>=1;$i--){
+            if(in_array($i, $currentX)){
+                break;
+            }
+            $count++;
+        }
+        
+        // Vertical Up 
+        $currentY = [];
+        if(isset($indexY[intval($data['cq'])])){
+            $currentY =  $indexY[intval($data['cq'])];
+        }
+        for($i=(intval($data['rq'])+1);$i<=intval($data['n']);$i++){
+            if(in_array($i, $currentY)){
+                break;
+            }
+            $count++;
+        }
+
+        // Vertical Down 
+        for($i=(intval($data['rq'])-1);$i>=1;$i--){
+            if(in_array($i, $currentY)){
+                break;
+            }
+            $count++;
+        }
+        
+        // Upper Rigth Diagonal 
+        $countUpRDiag = intval($data['cq'])+1;
+        for($i=(intval($data['rq'])+1);$i<=intval($data['n']); $i++){
+            $currentX = [];
+            if(isset($indexX[$i])){
+                $currentX = $indexX[$i];
+            }
+            if($countUpRDiag>intval($data['n'])){
+                break;
+            }
+            if(in_array($countUpRDiag, $currentX)){
+                break;
+            }
+            $countUpRDiag++;
+            $count++;
+        }
+
+        // Upper Left Diagonal 
+        $countUpLDiag = intval($data['cq'])-1;
+        for($i=(intval($data['rq'])+1);$i<=intval($data['n']); $i++){            
+            $currentX = [];
+            if(isset($indexX[$i])){
+                $currentX = $indexX[$i];
+            }
+            if($countUpLDiag<1){
+                break;
+            }
+            if(in_array($countUpLDiag, $currentX)){
+                break;
+            }
+            $countUpLDiag--;
+            $count++;
+        }
+
+        // Lower Right Diagonal 
+        $countLowRDiag = intval($data['cq'])+1;
+        for($i=(intval($data['rq'])-1);$i>=1; $i--){       
+            $currentX = [];
+            if(isset($indexX[$i])){
+                $currentX = $indexX[$i];
+            }
+            if($countLowRDiag>intval($data['n'])){
+                break;
+            }
+            if(in_array($countLowRDiag, $currentX)){
+                break;
+            }
+            $countLowRDiag++;
+            $count++;
+        }
+
+        // Lower Left Diagonal 
+        $countLowLDiag = intval($data['cq'])-1;
+        for($i=(intval($data['rq'])-1);$i>=1; $i--){       
+            $currentX = [];
+            if(isset($indexX[$i])){
+                $currentX = $indexX[$i];
+            }
+            if($countLowLDiag<1){
+                break;
+            }
+            if(in_array($countLowLDiag, $currentX)){
+                break;
+            }
+            $countLowLDiag--;
+            $count++;
+        }
+
+        return $count;
     }
 
     private function extraValidation($data){
@@ -84,11 +221,22 @@ class Problem1Controller extends Controller
                             "message" => "The $key item of the array 'obstacles', in the j position ($aPosition[1]) has lower value than the limit(1)" 
                         ];
                     }
-                    if($aPosition[0]>$data['n']){
+                    if($aPosition[1]>$data['n']){
                         $aErrors[]= [
                             "code" => 2007,
                             "field" => "j position error",
-                            "message" => "The $key item of the array 'obstacles', in the i position ($aPosition[1]) has bigger value than the limit($data[n])" 
+                            "message" => "The $key item of the array 'obstacles', in the j position ($aPosition[1]) has bigger value than the limit($data[n])" 
+                        ];
+                    }
+                }
+            }
+            if(!count($aErrors)){
+                foreach($data['obstacles'] as $key => $aPosition){
+                    if(intval($aPosition[0])===intval($data['rq']) && intval($aPosition[1])===intval($data['cq'])){
+                        $aErrors[]= [
+                            "code" => 2008,
+                            "field" => "Obstacle in queen's position",
+                            "message" => "The $key item of the array 'obstacles', is located in the same position of the queen" 
                         ];
                     }
                 }

@@ -7,60 +7,76 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## Interfell Test
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Problem 1: Chess Prediction
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+You have a square chess board with one queen and a number of obstacles placed on it.
+Determine how many squares the queen can attack.
+A queen is standing on an n x n chessboard. The chess board's rows are numbered from 1
+to n, going from bottom to top. Its columns are numbered from 1 to n, going from left to right.
+Each square is referenced by a tuple, (r, c) , describing the row, r, and column, c, where the
+square is located .
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+#### Documentation for testing:
 
-## Learning Laravel
+Command for running the laravel app: php artisan serve
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Route: http://localhost:8000/api/problem-1
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Type: POST 
 
-## Laravel Sponsors
+Example of Parameter to be sent:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+{
 
-### Premium Partners
+  "input": {
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[CMS Max](https://www.cmsmax.com/)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-- **[Romega Software](https://romegasoftware.com)**
+​    "n": 5,
 
-## Contributing
+​    "k": 4, 
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+​    "rq": 4, 
 
-## Code of Conduct
+​    "cq": 4,
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+​    "obstacles": [[5,1], [5,2], [3,3], [4,3]]
 
-## Security Vulnerabilities
+  }  
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+}
 
-## License
+\- n: an integer, the number of rows and columns in the board
+\- k: an integer, the number of obstacles on the board
+\- rq: integer, the row number of the queen's position
+\- cq: integer, the column number of the queen's position
+\- obstacles: a two dimensional array of integers where each element is an array of integers,
+the row and column of an obstacle.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+All of these fields has to be sent inside a parameter called "input"
+
+
+
+#### Problem 2: String value
+
+Jane loves strings more than anything. She has a string t with her, and value of string s over
+function f can be calculated as given below:
+
+**f(s) = |s| x Number of times s occurs in t**  
+
+#### Documentation for testing:
+
+*Command for running the laravel app:* php artisan serve
+
+*Route:* http://localhost:8000/api/problem-2
+
+*Type:* POST 
+
+**Example of Parameter to be sent:**
+
+*t:* 'abcabcddd'
+
+The 't' parameter must be a string of lowercase English alphabets.  
+
